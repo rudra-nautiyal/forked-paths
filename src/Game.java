@@ -10,13 +10,14 @@ public class Game {
 
     JFrame window;
     Container con;
-    JPanel titleNamePanel, startButtonPanel, mainTextPanel;
+    JPanel titleNamePanel, startButtonPanel, splashScreenPanel ,mainTextPanel, choiceButtonPanel;
     JLabel titleNameLabel;
-    JButton startButton;
-    JTextArea mainTextArea;
+    JButton startButton, choice1, choice2, choice3, choice4;
+    JTextArea mainTextArea, splashTextArea;
     Font titleFont, normalFont;
 
     TitleScreenHandler tsHandler = new TitleScreenHandler();
+    SplashScreenHandler spHandler = new SplashScreenHandler();
 
     public static void main(String[] args) {
 
@@ -92,13 +93,47 @@ public class Game {
         startButton.setBackground(Color.black);
         startButton.setFocusPainted(false);
         startButton.setBorder(BorderFactory.createLineBorder(Color.white, 3)); // White border
-        startButton.addActionListener(tsHandler);
+        startButton.addActionListener(spHandler);
 
         titleNamePanel.add(titleNameLabel);
         startButtonPanel.add(startButton);
 
         con.add(titleNamePanel);
         con.add(startButtonPanel);
+    }
+
+    public void createSplashScreen() {
+        titleNamePanel.setVisible(false);
+        startButtonPanel.setVisible(false);
+
+        splashScreenPanel = new JPanel();
+        splashScreenPanel.setBounds(100, 100, 600, 250);
+        splashScreenPanel.setBackground(Color.red);
+        con.add(splashScreenPanel);
+
+        splashTextArea = new JTextArea("Remember, your decisions are the reason your paths are forked...");
+        splashTextArea.setBounds(100, 100, 600, 250);
+        splashTextArea.setBackground(Color.black);
+        splashTextArea.setForeground(Color.white);
+        splashTextArea.setFont(normalFont);
+        splashTextArea.setLineWrap(true);
+        splashTextArea.setWrapStyleWord(true);
+        splashTextArea.setEditable(false);
+        splashScreenPanel.add(splashTextArea);
+
+        // Timer to switch screens after 3 seconds
+        Timer delay = new Timer(4000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                con.remove(splashScreenPanel); // Remove splash screen
+                createGameScreen(); // Show main game screen
+                con.revalidate(); // Refresh UI
+                con.repaint();
+            }
+        });
+
+        delay.setRepeats(false); // Run only once
+        delay.start();
     }
 
     public void createGameScreen() {
@@ -108,7 +143,7 @@ public class Game {
 
         mainTextPanel = new JPanel();
         mainTextPanel.setBounds(100, 100, 600, 250);
-        mainTextPanel.setBackground(Color.blue);
+        mainTextPanel.setBackground(Color.black);
         con.add(mainTextPanel);
 
         mainTextArea = new JTextArea("This is the main text area. Remember, your decisions are the reason your paths are forked...");
@@ -120,11 +155,44 @@ public class Game {
         mainTextArea.setWrapStyleWord(true);
         mainTextArea.setEditable(false);
         mainTextPanel.add(mainTextArea);
+
+        choiceButtonPanel = new JPanel();
+        choiceButtonPanel.setBounds(250, 350, 300, 150);
+        choiceButtonPanel.setBackground(Color.black);
+        choiceButtonPanel.setLayout(new GridLayout(4, 1));
+        con.add(choiceButtonPanel);
+
+        choice1 = ChoiceButton("This is choice one");
+        choiceButtonPanel.add(choice1);
+        choice2 = ChoiceButton("This is choice two");
+        choiceButtonPanel.add(choice2);
+        choice3 = ChoiceButton("This is choice three");
+        choiceButtonPanel.add(choice3);
+        choice4 = ChoiceButton("This is choice four");
+        choiceButtonPanel.add(choice4);
+
+    }
+
+    public class SplashScreenHandler implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            createSplashScreen();
+        }
     }
 
     public class TitleScreenHandler implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             createGameScreen();
         }
+    }
+
+    public JButton ChoiceButton(String text) {
+        JButton button;
+        button = new JButton();
+        button.setBackground(Color.black);
+        button.setForeground(Color.white);
+        button.setFont(normalFont);
+        button.setText(text);
+        button.setFocusPainted(false);
+        return button;
     }
 }
